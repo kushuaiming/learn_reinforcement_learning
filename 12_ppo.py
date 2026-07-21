@@ -66,8 +66,8 @@ class PPO:
         dones = torch.tensor(transition_dict['dones'],
                              dtype=torch.float).view(-1, 1).to(self.device)
         td_target = rewards + self.gamma * self.critic(next_states) * (1 -
-                                                                       dones)
-        td_delta = td_target - self.critic(states)
+                                                                       dones) # 用 V 拟合 Q
+        td_delta = td_target - self.critic(states) # TD Error, 即 Q - V
         advantage = rl_utils.compute_advantage(self.gamma, self.lmbda,
                                                td_delta.cpu()).to(self.device)
         old_log_probs = torch.log(self.actor(states).gather(1,
